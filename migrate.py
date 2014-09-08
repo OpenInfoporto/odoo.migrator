@@ -1,13 +1,25 @@
 from lib import *
+import ConfigParser
+
+
+Config = ConfigParser.ConfigParser()
+Config.read("config.ini")
+
 
 def init():
     logging.info('connecting to source...')
-    src = Odoo('http://shepherd.infoporto.it','8069','admin',
-               '1nf0p0rt0','openerp.infoporto.it')
+    src = Odoo(Config.get('source', 'host'),
+               Config.get('source', 'port'),
+               Config.get('source', 'user'),
+               Config.get('source', 'pwd'),
+               Config.get('source', 'db'))
 
     logging.info('connecting to destination...')
-    dst = Odoo('http://heisenberg.infoporto.it','8069','admin',
-               '1nf0p0rt0','openerpinfoporto')
+    dst = Odoo(Config.get('destination', 'host'),
+               Config.get('destination', 'port'),
+               Config.get('destination', 'user'),
+               Config.get('destination', 'pwd'),
+               Config.get('destination', 'db'))
 
     return src, dst
 
@@ -41,6 +53,7 @@ if __name__ == "__main__":
             logging.info('** Fetching source contacts for %s ...' % p['name'])
             src_contacts = Contact(src).get_by_partner_id(p['id'])
             logging.info('** %s contacts found. ' % len(src_contacts))
-
-            #src_contacts.create()
+            src_contacts = src.alter(src_contacts, dict(field='partner_id', value=cid))
+            for c in src_contacts:
+                src.create('res.partner.contact', c)
             

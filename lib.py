@@ -6,7 +6,7 @@ class Odoo():
 
     def __init__(self, host, port, user, pwd, db, vers=6):
         self.host = host
-        self.port = port
+        self.port = int(port)
         self.user = user
         self.pwd = pwd
         self.db = db
@@ -35,9 +35,16 @@ class Odoo():
 
         return True
         
+    def alter(self, data, change):
+        altered = []
+        for el in data:
+            el[change['field']] = change['value']
+            altered.append(el)
+        
+        return altered
+
 
 class Partner():
-
     args = []
     fields = ['id', 'name', 'active', 'customer', 'supplier', 
               'lang', 'vat', 'ref', 'website',
@@ -53,7 +60,7 @@ class Partner():
 class Contact():
     args = []
     fields = ['id', 'function', 'fax', 'street2', 'street', 'phone', 'active',
-              'city', 'name','mobile', 'lang','email','title','user_id',
+              'city', 'name','mobile', 'lang','email','user_id',
               'country_id','partner_id', 'birthdate','customer', 'supplier',
               'state_id','contact_id', 'first_name', 'last_name']
 
